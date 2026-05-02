@@ -34,8 +34,21 @@ async function run() {
         res.send(result)
     })
 
+    // app.get('/arts', async(req,res)=>{
+    //   const cursor = myColl.find()
+    //   const result = await cursor.toArray()
+    //   res.send(result)
+    // })
+
     app.get('/arts', async(req,res)=>{
-      const cursor = myColl.find()
+      const email = req.query.email
+      const query = {}
+
+      if(email){
+        query.artistEmail = email
+      }
+
+      const cursor = myColl.find(query)
       const result = await cursor.toArray()
       res.send(result)
     })
@@ -44,6 +57,13 @@ async function run() {
       const id = req.params.id
       const query = {_id : new ObjectId(id)}
       const result = await myColl.findOne(query)
+      res.send(result)
+    })
+
+    app.delete('/arts/:id', async(req,res)=>{
+      const id = req.params.id
+      const query = {_id : new ObjectId(id)}
+      const result = await myColl.deleteOne(query)
       res.send(result)
     })
 
