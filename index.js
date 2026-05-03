@@ -67,6 +67,24 @@ async function run() {
       res.send(result)
     })
 
+    app.patch('/arts/:id', async(req,res)=>{
+      const id = req.params.id
+      const query = {_id : new ObjectId(id)}
+      const updatedArt = req.body
+      const update  = {
+        $set: {
+          image: updatedArt.image,
+          title: updatedArt.title,
+          category: updatedArt.category,
+          medium: updatedArt.medium,
+          artistImage: updatedArt.artistImage,
+          description: updatedArt.description
+        }
+      }
+      const result = await myColl.updateOne(query,update)
+      res.send(result)
+    })
+
     app.get('/artsHome', async(req,res)=>{
       const cursor = myColl.find().sort({createdAt: -1}).limit(6)
       const result = await cursor.toArray()
