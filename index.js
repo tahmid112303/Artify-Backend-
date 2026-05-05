@@ -29,16 +29,14 @@ async function run() {
   try {
   
     app.post('/arts', async(req,res)=>{
-        const newArt = req.body
+        const newArt = {
+          ...req.body,
+          likes: 0,
+          likedBy: []
+        }
         const result = await myColl.insertOne(newArt)
         res.send(result)
     })
-
-    // app.get('/arts', async(req,res)=>{
-    //   const cursor = myColl.find()
-    //   const result = await cursor.toArray()
-    //   res.send(result)
-    // })
 
     app.get('/arts', async(req,res)=>{
       const email = req.query.email
@@ -50,6 +48,12 @@ async function run() {
 
       const cursor = myColl.find(query)
       const result = await cursor.toArray()
+      res.send(result)
+    })
+
+    app.get('/arts/search', async(req,res)=>{
+      const searchText = req.query.title
+      const result =await myColl.find({title: {$regex: searchText, $options: "i"}}).toArray()
       res.send(result)
     })
 
@@ -67,10 +71,43 @@ async function run() {
       res.send(result)
     })
 
+      app.patch('/arts/:id/like', async (req, res) => {
+      const id = req.params.id;
+      const { email } = req.body;
+
+      const filter = { _id: new ObjectId(id) };
+      const art = await myColl.findOne(filter);
+
+      if (!art) {
+        return res.send({ message: 'Not found' });
+      }
+
+      let updateDoc;
+
+      // 👉 already liked → UNLIKE
+      if (art.likedBy?.includes(email)) {
+        updateDoc = {
+          $inc: { likes: -1 },
+          $pull: { likedBy: email }
+        };
+      } 
+      // 👉 not liked → LIKE
+      else {
+        updateDoc = {
+          $inc: { likes: 1 },
+          $addToSet: { likedBy: email }
+        };
+      }
+
+      const result = await myColl.updateOne(filter, updateDoc);
+      res.send(result);
+    });
+
     app.patch('/arts/:id', async(req,res)=>{
       const id = req.params.id
       const query = {_id : new ObjectId(id)}
       const updatedArt = req.body
+      console.log(updatedArt)
       const update  = {
         $set: {
           image: updatedArt.image,
