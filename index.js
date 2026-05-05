@@ -84,14 +84,13 @@ async function run() {
 
       let updateDoc;
 
-      // 👉 already liked → UNLIKE
       if (art.likedBy?.includes(email)) {
         updateDoc = {
           $inc: { likes: -1 },
           $pull: { likedBy: email }
         };
       } 
-      // 👉 not liked → LIKE
+  
       else {
         updateDoc = {
           $inc: { likes: 1 },
