@@ -54,7 +54,21 @@ async function run() {
           res.send(result);
     });
 
-    app.get('/favorites', async (req, res) => {
+    app.get('/favorites/:id', async(req,res)=>{
+        const id = req.params.id
+        const query = {_id: new ObjectId(id)}
+        const result = await myFav.findOne(query)
+        res.send(result)
+    })
+
+    app.delete('/favorites/:id', async(req,res)=>{
+        const id = req.params.id 
+        const query = {_id: new ObjectId(id)}
+        const result = await myFav.deleteOne(query)
+        res.send(result)
+    })
+
+    app.get('/favorites', async(req, res) => {
       const email = req.query.fav
       const query = {}
 
