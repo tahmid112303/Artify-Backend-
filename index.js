@@ -24,6 +24,7 @@ const client = new MongoClient(uri, {
 
 const myDB = client.db("artify120");
 const myColl = myDB.collection("artInfo");
+const myFav = myDB.collection("favoriteArts");
 
 async function run() {
   try {
@@ -37,6 +38,34 @@ async function run() {
         const result = await myColl.insertOne(newArt)
         res.send(result)
     })
+
+      app.post('/favorites', async (req, res) => {
+          const data = req.body;
+          const exists = await myFav.findOne({
+            artId: data.artId,
+            favorite_by: data.favorite_by
+          });
+
+          if (exists) {
+            return res.send({ message: "Already favorited" });
+          }
+
+          const result = await myFav.insertOne(data);
+          res.send(result);
+    });
+
+    app.get('/favorites', async (req, res) => {
+      const email = req.query.fav
+      const query = {}
+
+      if(email){
+        query.favorite_by = email
+      }
+
+      const cursor =  myFav.find(query)
+      const result = await cursor.toArray()
+      res.send(result)
+    });
 
     app.get('/arts', async(req,res)=>{
       const email = req.query.email
@@ -52,9 +81,9 @@ async function run() {
     })
 
     app.get('/arts/search', async(req,res)=>{
-      const searchText = req.query.title
-      const result =await myColl.find({title: {$regex: searchText, $options: "i"}}).toArray()
-      res.send(result)
+      const searchText = req.query.title;
+      const result = await myColl.find({title: {$regex: searchText, $options: "i"}}).toArray();
+      res.send(result);
     })
 
     app.get('/arts/:id', async(req,res)=>{
