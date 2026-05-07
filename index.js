@@ -44,14 +44,14 @@ async function run() {
           const exists = await myFav.findOne({
             artId: data.artId,
             favorite_by: data.favorite_by
-          });
+          })
 
           if (exists) {
-            return res.send({ message: "Already favorited" });
+            return res.send({ message: "Already favorited" })
           }
 
           const result = await myFav.insertOne(data);
-          res.send(result);
+          res.send(result)
     });
 
     app.get('/favorites/:id', async(req,res)=>{
@@ -79,7 +79,7 @@ async function run() {
       const cursor =  myFav.find(query)
       const result = await cursor.toArray()
       res.send(result)
-    });
+    })
 
     app.get('/arts', async(req,res)=>{
       const email = req.query.email
@@ -95,9 +95,9 @@ async function run() {
     })
 
     app.get('/arts/search', async(req,res)=>{
-      const searchText = req.query.title;
-      const result = await myColl.find({title: {$regex: searchText, $options: "i"}}).toArray();
-      res.send(result);
+      const searchText = req.query.title
+      const result = await myColl.find({title: {$regex: searchText, $options: "i"}}).toArray()
+      res.send(result)
     })
 
     app.get('/arts/:id', async(req,res)=>{
@@ -118,11 +118,11 @@ async function run() {
       const id = req.params.id;
       const { email } = req.body;
 
-      const filter = { _id: new ObjectId(id) };
-      const art = await myColl.findOne(filter);
+      const filter = { _id: new ObjectId(id) }
+      const art = await myColl.findOne(filter)
 
       if (!art) {
-        return res.send({ message: 'Not found' });
+        return res.send({ message: 'Not found' })
       }
 
       let updateDoc;
@@ -141,8 +141,8 @@ async function run() {
         };
       }
 
-      const result = await myColl.updateOne(filter, updateDoc);
-      res.send(result);
+      const result = await myColl.updateOne(filter, updateDoc)
+      res.send(result)
     });
 
     app.patch('/arts/:id', async(req,res)=>{
