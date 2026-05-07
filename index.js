@@ -115,8 +115,8 @@ async function run() {
     })
 
       app.patch('/arts/:id/like', async (req, res) => {
-      const id = req.params.id;
-      const { email } = req.body;
+      const id = req.params.id
+      const { email } = req.body
 
       const filter = { _id: new ObjectId(id) }
       const art = await myColl.findOne(filter)
