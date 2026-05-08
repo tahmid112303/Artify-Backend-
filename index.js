@@ -22,12 +22,14 @@ const client = new MongoClient(uri, {
   }
 });
 
-const myDB = client.db("artify120");
-const myColl = myDB.collection("artInfo");
-const myFav = myDB.collection("favoriteArts");
-
 async function run() {
   try {
+
+    await client.connect();
+
+    const myDB = client.db("artify120");
+    const myColl = myDB.collection("artInfo");
+    const myFav = myDB.collection("favoriteArts");
   
     app.post('/arts', async(req,res)=>{
         const newArt = {
@@ -170,7 +172,6 @@ async function run() {
       res.send(result)
     })
 
-    await client.connect();
     // await client.db("admin").command({ ping: 1 });
     console.log("Pinged your deployment. You successfully connected to MongoDB!");
   } finally {
@@ -179,6 +180,4 @@ async function run() {
 }
 run().catch(console.dir);
 
-app.listen(port, () => {
-  console.log(`Example app listening on port ${port}`)
-})
+module.exports = app
