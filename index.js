@@ -180,4 +180,12 @@ async function run() {
 }
 run().catch(console.dir);
 
-module.exports = app
+if (process.env.NODE_ENV !== 'production') {
+  app.listen(port, () => {
+    console.log(`Server running`);
+  });
+}
+
+module.exports = app;
+
+
